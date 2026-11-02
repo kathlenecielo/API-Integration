@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Bloom | Discovery</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            color: white;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(194,112,255,.23), transparent 30%),
+                radial-gradient(circle at 85% 25%, rgba(255,130,205,.18), transparent 28%),
+                radial-gradient(circle at 50% 90%, rgba(100,105,255,.20), transparent 35%),
+                linear-gradient(135deg, #100d2d, #211344 50%, #100d2d);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+                radial-gradient(2px 2px at 70% 20%, #ffd9f4, transparent),
+                radial-gradient(2px 2px at 40% 75%, #fff, transparent),
+                radial-gradient(2px 2px at 85% 65%, #d8c6ff, transparent);
+            background-size: 350px 350px;
+            animation: twinkle 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from { opacity: .35; }
+            to { opacity: .9; }
+        }
+
+        .navbar {
+            background: rgba(18,12,48,.75);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,190,240,.18);
+            padding: 16px 0;
+        }
+
+        .navbar-brand {
+            color: #ffd5f2 !important;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255,150,220,.65);
+        }
+
+        .page-container {
+            padding-top: 65px;
+            padding-bottom: 70px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #29143f;
+            background: linear-gradient(120deg, #ffc7e9, #d4bdff);
+            border-radius: 30px;
+            padding: 11px 22px;
+            font-weight: 700;
+            transition: .3s;
+            margin-bottom: 30px;
+        }
+
+        .back-btn:hover {
+            color: #29143f;
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255,180,230,.6);
+        }
+
+        .details-card {
+            background: rgba(255,255,255,.09);
+            border: 1px solid rgba(225,190,255,.25);
+            border-radius: 25px;
+            overflow: hidden;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 0 35px rgba(150,100,220,.2);
+        }
+
+        .details-image {
+            width: 100%;
+            max-height: 620px;
+            object-fit: contain;
+            background: rgba(10,7,30,.55);
+            display: block;
+        }
+
+        .details-content {
+            padding: 35px;
+        }
+
+        .details-content h1 {
+            color: #ffe0f5;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            text-shadow: 0 0 18px rgba(255,170,230,.4);
+            margin-bottom: 20px;
+        }
+
+        .details-content p {
+            color: #ded3f2;
+            line-height: 1.9;
+            font-size: 1rem;
+        }
+
+        .metadata {
+            color: #ffc8eb;
+            font-size: .9rem;
+            margin-top: 20px;
+            line-height: 1.9;
+            overflow-wrap: anywhere;
+        }
+
+        .metadata strong {
+            color: #e5caff;
+        }
+
+        .status-message {
+            text-align: center;
+            color: #e8d7ff;
+            padding: 50px 15px;
+        }
+
+        footer {
+            text-align: center;
+            color: #bfb0dc;
+            padding: 25px 15px;
+            border-top: 1px solid rgba(255,190,240,.15);
+            font-size: .85rem;
+        }
+
+        @media (max-width: 768px) {
+            .details-content {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">✧ Cosmic Bloom</a>
+        </div>
+    </nav>
+
+    <main class="container page-container">
+
+        <a href="index.html" class="back-btn">
+            ← Back to the Universe
+        </a>
+
+        <div id="statusMessage" class="status-message">
+            ✨ Gathering your cosmic discovery...
+        </div>
+
+        <div id="detailsContainer"></div>
+
+    </main>
+
+    <footer>
+        <p class="mb-1">Made with ♡ and a little stardust</p>
+        <p class="mb-0">Images and information provided by NASA's Image and Video Library</p>
+    </footer>
+
+    <script>
+        const API_URL = "https://images-api.nasa.gov/search";
+
+        const statusMessage = document.getElementById("statusMessage");
+        const detailsContainer = document.getElementById("detailsContainer");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const nasaId = urlParams.get("id");
+
+        // GET IMAGE URL
+        function getImageUrl(item) {
+            const links = item.links || [];
+
+            const preview = links.find(link =>
+                link.rel === "preview" && link.render === "image"
+            );
+
+            const image = links.find(link =>
+                link.render === "image"
+            );
+
+            const anyPreview = links.find(link =>
+                link.rel === "preview"
+            );
+
+            return (preview || image || anyPreview)?.href || null;
+        }
+
+        // LOAD IMAGE DETAILS
+        async function loadDetails() {
+            if (!nasaId) {
+                showError("No image was selected. Please return to the gallery.");
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API_URL}?nasa_id=${encodeURIComponent(nasaId)}&media_type=image`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Unable to retrieve image details.");
+                }
+
+                const data = await response.json();
+                const item = data.collection.items?.[0];
+
+                if (!item || !item.data?.[0]) {
+                    throw new Error("Image details could not be found.");
+                }
+
+                displayDetails(item);
+
+            } catch (error) {
+                console.error(error);
+                showError("Oops! We couldn't load this cosmic discovery. Please try again.");
+            }
+        }
+
+        // DISPLAY DETAILS
+        function displayDetails(item) {
+            const info = item.data[0];
+            const imageUrl = getImageUrl(item);
+
+            const title = info.title || "Untitled Cosmic Discovery";
+            const description =
+                info.description || "No description is available for this image.";
+
+            const date = info.date_created
+                ? new Date(info.date_created).toLocaleDateString()
+                : "Not available";
+
+            const center = info.center || "Not available";
+            const photographer = info.photographer || "Not available";
+            const nasaIdValue = info.nasa_id || "Not available";
+
+            statusMessage.style.display = "none";
+
+            const card = document.createElement("div");
+            card.className = "details-card";
+
+            if (imageUrl) {
+                const image = document.createElement("img");
+                image.src = imageUrl;
+                image.alt = title;
+                image.className = "details-image";
+
+                image.onerror = function () {
+                    this.onerror = null;
+                    this.src = "https://placehold.co/1000x600/211344/ffd5f2?text=Image+Unavailable";
+                };
+
+                card.appendChild(image);
+            }
+
+            const content = document.createElement("div");
+            content.className = "details-content";
+
+            const heading = document.createElement("h1");
+            heading.textContent = title;
+
+            const paragraph = document.createElement("p");
+            paragraph.textContent = description;
+
+            const metadata = document.createElement("div");
+            metadata.className = "metadata";
+
+            const fields = [
+                ["NASA ID", nasaIdValue],
+                ["Date Created", date],
+                ["NASA Center", center],
+                ["Photographer", photographer]
+            ];
+
+            fields.forEach(([label, value]) => {
+                const line = document.createElement("div");
+                const strong = document.createElement("strong");
+
+                strong.textContent = label + ": ";
+                line.append(strong, document.createTextNode(value));
+                metadata.appendChild(line);
+            });
+
+            content.append(heading, paragraph, metadata);
+            card.appendChild(content);
+            detailsContainer.appendChild(card);
+
+            document.title = title + " | Cosmic Bloom";
+        }
+
+        function showError(message) {
+            statusMessage.style.display = "block";
+            statusMessage.textContent = message;
+        }
+
+        // INITIAL LOAD
+        loadDetails();
+    </script>
+
+</body>
+</html>

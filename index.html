@@ -1,0 +1,608 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Bloom | Explore the Universe</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            color: #fff;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(194,112,255,.23), transparent 30%),
+                radial-gradient(circle at 85% 25%, rgba(255,130,205,.18), transparent 28%),
+                radial-gradient(circle at 50% 90%, rgba(100,105,255,.20), transparent 35%),
+                linear-gradient(135deg, #100d2d, #211344 50%, #100d2d);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            background-image:
+                radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+                radial-gradient(2px 2px at 70% 20%, #ffd9f4, transparent),
+                radial-gradient(2px 2px at 40% 75%, #fff, transparent),
+                radial-gradient(2px 2px at 85% 65%, #d8c6ff, transparent);
+            background-size: 350px 350px;
+            animation: twinkle 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from { opacity: .35; }
+            to { opacity: .9; }
+        }
+
+        .navbar {
+            background: rgba(18,12,48,.75);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,190,240,.18);
+            padding: 16px 0;
+        }
+
+        .navbar-brand {
+            color: #ffd5f2 !important;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(255,150,220,.65);
+        }
+
+        .nav-caption {
+            color: #d7c7ff;
+            font-size: .85rem;
+            letter-spacing: 2px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 85px 20px 45px;
+        }
+
+        .hero-label {
+            color: #f5bce8;
+            letter-spacing: 5px;
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.7rem, 7vw, 5rem);
+            font-weight: 700;
+            color: #fff0fb;
+            text-shadow: 0 0 12px rgba(255,180,230,.8),
+                         0 0 35px rgba(190,140,255,.65);
+            margin-bottom: 18px;
+        }
+
+        .hero p {
+            color: #d9c9f5;
+            max-width: 650px;
+            margin: auto;
+            line-height: 1.8;
+        }
+
+        .sparkle {
+            color: #ffc9ec;
+            text-shadow: 0 0 15px #ff9bdf;
+        }
+
+        .search-area {
+            max-width: 750px;
+            margin: 35px auto 25px;
+        }
+
+        .search-box {
+            background: rgba(255,255,255,.10);
+            border: 1px solid rgba(255,195,235,.45);
+            border-radius: 50px;
+            padding: 13px 22px;
+            color: white;
+            box-shadow: 0 0 22px rgba(220,130,255,.18);
+        }
+
+        .search-box:focus {
+            background: rgba(255,255,255,.14);
+            color: white;
+            border-color: #ffb7e7;
+            box-shadow: 0 0 25px rgba(255,150,225,.35);
+        }
+
+        .search-box::placeholder {
+            color: #d4c5e8;
+        }
+
+        .glow-btn {
+            border: 1px solid rgba(255,200,240,.5);
+            border-radius: 50px;
+            padding: 12px 25px;
+            color: white;
+            font-weight: 700;
+            background: linear-gradient(120deg, #d66ab9, #9876e8);
+            box-shadow: 0 0 18px rgba(220,130,255,.3);
+            transition: .3s ease;
+            white-space: nowrap;
+        }
+
+        .glow-btn:hover {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 0 28px rgba(255,150,230,.65);
+        }
+
+        .category-section {
+            text-align: center;
+            margin: 25px auto 45px;
+        }
+
+        .category-title {
+            color: #e8d7ff;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 18px;
+        }
+
+        .category-btn {
+            color: #f8e8ff;
+            border: 1px solid rgba(226,190,255,.4);
+            background: rgba(255,255,255,.08);
+            border-radius: 30px;
+            padding: 9px 19px;
+            margin: 5px;
+            transition: .3s;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            color: #27143e;
+            background: linear-gradient(120deg, #ffc6eb, #cdb7ff);
+            box-shadow: 0 0 18px rgba(255,180,230,.45);
+            border-color: transparent;
+        }
+
+        .gallery-section {
+            padding-bottom: 65px;
+        }
+
+        .section-title {
+            color: #ffe4f6;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px rgba(255,180,230,.4);
+        }
+
+        .image-card {
+            height: 100%;
+            overflow: hidden;
+            border-radius: 22px;
+            background: rgba(255,255,255,.09);
+            border: 1px solid rgba(225,190,255,.22);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,.18);
+            transition: .35s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-8px);
+            border-color: #f6b9e9;
+            box-shadow: 0 0 25px rgba(220,145,255,.35);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            background: #24163e;
+        }
+
+        .card-content {
+            padding: 19px;
+        }
+
+        .card-content h5 {
+            color: #ffe0f5;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+        }
+
+        .card-content p {
+            color: #d5c9eb;
+            font-size: .88rem;
+            line-height: 1.6;
+            min-height: 65px;
+        }
+
+        .view-btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #28133f;
+            background: linear-gradient(120deg, #ffc7e9, #d4bdff);
+            border-radius: 30px;
+            padding: 9px 18px;
+            font-size: .85rem;
+            font-weight: 700;
+            transition: .3s;
+        }
+
+        .view-btn:hover {
+            color: #28133f;
+            box-shadow: 0 0 18px rgba(255,180,230,.65);
+            transform: scale(1.04);
+        }
+
+        .status-message {
+            color: #e8d7ff;
+            text-align: center;
+            padding: 35px 10px;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 35px;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .pagination .page-link {
+            color: #f9e5ff;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(230,190,255,.3);
+            border-radius: 50px !important;
+            min-width: 42px;
+            text-align: center;
+        }
+
+        .pagination .page-link:hover,
+        .pagination .page-item.active .page-link {
+            color: #28133f;
+            background: linear-gradient(120deg, #ffc6eb, #cdb7ff);
+            border-color: transparent;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #82779b;
+            background: rgba(255,255,255,.04);
+        }
+
+        footer {
+            text-align: center;
+            color: #bfb0dc;
+            padding: 25px 15px;
+            border-top: 1px solid rgba(255,190,240,.15);
+            font-size: .85rem;
+        }
+
+        @media (max-width: 576px) {
+            .hero { padding-top: 60px; }
+            .image-card img { height: 200px; }
+            #searchForm { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">✧ Cosmic Bloom</a>
+            <span class="nav-caption d-none d-sm-inline">A LITTLE UNIVERSE OF WONDER</span>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-label">✦ Explore the extraordinary ✦</div>
+        <h1>Discover the Universe</h1>
+
+        <p>
+            Wander through galaxies, distant planets, cosmic wonders, and
+            breathtaking moments captured by NASA. Your little journey
+            through the stars begins here. <span class="sparkle">✧</span>
+        </p>
+
+        <div class="search-area">
+            <form id="searchForm" class="d-flex gap-2">
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="form-control search-box"
+                    placeholder="Search the cosmos... moon, galaxy, stars..."
+                >
+                <button class="glow-btn" type="submit">Search ✦</button>
+            </form>
+        </div>
+
+        <button class="glow-btn" id="randomBtn" type="button">
+            ✨ Surprise Me
+        </button>
+    </header>
+
+    <section class="category-section container">
+        <h4 class="category-title">Choose Your Cosmic Destination</h4>
+
+        <div>
+            <button class="category-btn active" data-query="galaxy">Galaxies</button>
+            <button class="category-btn" data-query="nebula">Nebulae</button>
+            <button class="category-btn" data-query="planet">Planets</button>
+            <button class="category-btn" data-query="moon">Moons</button>
+            <button class="category-btn" data-query="stars">Stars</button>
+            <button class="category-btn" data-query="astronaut">Astronauts</button>
+            <button class="category-btn" data-query="space telescope">Telescopes</button>
+            <button class="category-btn" data-query="solar system">Solar System</button>
+        </div>
+    </section>
+
+    <main class="container gallery-section">
+        <h2 class="section-title text-center" id="galleryTitle">
+            ✧ Galaxy Collection ✧
+        </h2>
+
+        <div id="statusMessage" class="status-message">
+            Preparing your cosmic adventure...
+        </div>
+
+        <div class="row g-4" id="imageContainer"></div>
+
+        <nav aria-label="Image pages">
+            <ul class="pagination" id="pagination"></ul>
+        </nav>
+    </main>
+
+    <footer>
+        <p class="mb-1">Made with ♡ and a little stardust</p>
+        <p class="mb-0">Images and information provided by NASA's Image and Video Library</p>
+    </footer>
+
+    <script>
+        const API_URL = "https://images-api.nasa.gov/search";
+
+        const imageContainer = document.getElementById("imageContainer");
+        const statusMessage = document.getElementById("statusMessage");
+        const searchForm = document.getElementById("searchForm");
+        const searchInput = document.getElementById("searchInput");
+        const pagination = document.getElementById("pagination");
+        const galleryTitle = document.getElementById("galleryTitle");
+
+        const imagesPerPage = 8;
+
+        let allImages = [];
+        let currentPage = 1;
+
+        // IMAGE URL HELPER
+        function getImageUrl(item) {
+            const links = item.links || [];
+
+            const preview = links.find(link =>
+                link.rel === "preview" && link.render === "image"
+            );
+
+            const image = links.find(link =>
+                link.render === "image"
+            );
+
+            const anyPreview = links.find(link =>
+                link.rel === "preview"
+            );
+
+            return (preview || image || anyPreview)?.href || null;
+        }
+
+        // FETCH NASA IMAGES
+        async function fetchImages(query) {
+            imageContainer.innerHTML = "";
+            pagination.innerHTML = "";
+
+            statusMessage.style.display = "block";
+            statusMessage.textContent = "✨ Searching the universe...";
+
+            galleryTitle.textContent =
+                "✧ " + capitalize(query) + " Collection ✧";
+
+            document.querySelectorAll(".category-btn").forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.query.toLowerCase() === query.toLowerCase()
+                );
+            });
+
+            try {
+                const response = await fetch(
+                    `${API_URL}?q=${encodeURIComponent(query)}&media_type=image&page_size=100`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Unable to connect to NASA.");
+                }
+
+                const data = await response.json();
+
+                allImages = (data.collection.items || []).filter(item => {
+                    return item.data?.[0]?.nasa_id && getImageUrl(item);
+                });
+
+                if (allImages.length === 0) {
+                    statusMessage.textContent =
+                        "No cosmic discoveries found. Try another search! ✧";
+                    return;
+                }
+
+                statusMessage.style.display = "none";
+                currentPage = 1;
+                displayImages();
+
+            } catch (error) {
+                console.error(error);
+                statusMessage.textContent =
+                    "Oops! Something went wrong. Check your internet connection and try again.";
+            }
+        }
+
+        // DISPLAY IMAGES
+        function displayImages() {
+            imageContainer.innerHTML = "";
+
+            const start = (currentPage - 1) * imagesPerPage;
+            const pageImages = allImages.slice(start, start + imagesPerPage);
+
+            pageImages.forEach(item => {
+                const info = item.data[0];
+                const imageUrl = getImageUrl(item);
+
+                if (!imageUrl) return;
+
+                const title = info.title || "Untitled Cosmic Discovery";
+                const description =
+                    info.description || "Explore this amazing NASA image.";
+
+                const shortDescription = description.length > 110
+                    ? description.substring(0, 110) + "..."
+                    : description;
+
+                const card = document.createElement("div");
+                card.className = "col-12 col-sm-6 col-lg-3";
+
+                const image = document.createElement("img");
+                image.src = imageUrl;
+                image.alt = title;
+                image.loading = "lazy";
+
+                image.onerror = function () {
+                    this.onerror = null;
+                    this.src = "https://placehold.co/600x400/211344/ffd5f2?text=Image+Unavailable";
+                };
+
+                const cardBox = document.createElement("div");
+                cardBox.className = "image-card";
+
+                const content = document.createElement("div");
+                content.className = "card-content";
+
+                const heading = document.createElement("h5");
+                heading.textContent = title;
+
+                const paragraph = document.createElement("p");
+                paragraph.textContent = shortDescription;
+
+                const link = document.createElement("a");
+                link.href = "view.html?id=" + encodeURIComponent(info.nasa_id);
+                link.className = "view-btn";
+                link.textContent = "Explore More ✧";
+
+                content.append(heading, paragraph, link);
+                cardBox.append(image, content);
+                card.appendChild(cardBox);
+                imageContainer.appendChild(card);
+            });
+
+            displayPagination();
+        }
+
+        // PAGINATION
+        function displayPagination() {
+            pagination.innerHTML = "";
+
+            const totalPages = Math.ceil(allImages.length / imagesPerPage);
+
+            if (totalPages <= 1) return;
+
+            addPageButton("Previous", currentPage - 1, currentPage === 1);
+
+            for (let page = 1; page <= totalPages; page++) {
+                addPageButton(page, page, false, page === currentPage);
+            }
+
+            addPageButton("Next", currentPage + 1, currentPage === totalPages);
+        }
+
+        function addPageButton(label, page, disabled, active = false) {
+            const li = document.createElement("li");
+
+            li.className = "page-item" +
+                (disabled ? " disabled" : "") +
+                (active ? " active" : "");
+
+            const button = document.createElement("button");
+            button.className = "page-link";
+            button.type = "button";
+            button.textContent = label;
+            button.disabled = disabled;
+
+            button.addEventListener("click", () => {
+                currentPage = page;
+                displayImages();
+                window.scrollTo({ top: 450, behavior: "smooth" });
+            });
+
+            li.appendChild(button);
+            pagination.appendChild(li);
+        }
+
+        // SEARCH
+        searchForm.addEventListener("submit", event => {
+            event.preventDefault();
+
+            const query = searchInput.value.trim();
+
+            if (query) {
+                fetchImages(query);
+            }
+        });
+
+        // CATEGORY BUTTONS
+        document.querySelectorAll(".category-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                searchInput.value = "";
+                fetchImages(button.dataset.query);
+            });
+        });
+
+        // RANDOM SEARCH
+        document.getElementById("randomBtn").addEventListener("click", () => {
+            const topics = [
+                "colorful nebula",
+                "deep space galaxy",
+                "beautiful planets",
+                "cosmic stars",
+                "space exploration",
+                "earth from space",
+                "moon surface",
+                "hubble telescope"
+            ];
+
+            const randomTopic =
+                topics[Math.floor(Math.random() * topics.length)];
+
+            searchInput.value = randomTopic;
+            fetchImages(randomTopic);
+        });
+
+        // HELPER FUNCTIONS
+        function capitalize(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        // INITIAL LOAD
+        fetchImages("galaxy");
+    </script>
+
+</body>
+</html>
